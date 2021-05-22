@@ -18,7 +18,7 @@ serverAddr = '172.105.226.101'
 # if len(sys.argv) == 2:
 #     serverAddr = sys.argv[1]
 
-sprite1 = pygame.image.load('images/BlueThing/BlueThing_front.png')
+sprite1 = pygame.image.load('caloncabe/data/BlueThing_front.png')
 sprite2 = pygame.image.load('images/Ladette/Ladette_front.png')
 sprite3 = pygame.image.load('images/TrashPanda/TrashPanda_front.png')
 sprite4 = pygame.image.load('images/Tubby/Tubby_front.png')
