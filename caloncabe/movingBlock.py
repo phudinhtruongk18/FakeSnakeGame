@@ -1,118 +1,87 @@
 import pygame
 from pygame.locals import *
 import time
-import random
+from caloncabe.network import Network
+from snake import Snake
+from strawberry import Strawberry
 
-SIZE = 26
-
-class Apple:
-    def __init__(self, parent_screen):
-        self.parent_screen = parent_screen
-        self.image = pygame.image.load("data/dautaydethuong.png").convert()
-        self.size = self.image.get_size()[0]
-        self.x = 15 * self.size
-        self.y = 15 * self.size
-
-    def draw(self):
-        self.parent_screen.blit(self.image, (self.x, self.y))
-        pygame.display.flip()
-
-    def move(self):
-        self.x = random.randint(1, 25) * self.size
-        self.y = random.randint(1, 20) * self.size
-
-
-class Snake:
-    def __init__(self, parent_screen, length):
-        self.parent_screen = parent_screen
-        self.image = pygame.image.load("data/player.png").convert()
-        self.direction = 'down'
-
-        self.length = length
-        self.x = [SIZE]*length
-        self.y = [SIZE]*length
-
-    def move_left(self):
-        self.direction = 'left'
-
-    def move_right(self):
-        self.direction = 'right'
-
-    def move_up(self):
-        self.direction = 'up'
-
-    def move_down(self):
-        self.direction = 'down'
-
-    def walk(self):
-        # update body
-        for i in range(self.length-1,0,-1):
-            self.x[i] = self.x[i-1]
-            self.y[i] = self.y[i-1]
-
-        # update head
-        if self.direction == 'left':
-            self.x[0] -= SIZE
-        if self.direction == 'right':
-            self.x[0] += SIZE
-        if self.direction == 'up':
-            self.y[0] -= SIZE
-        if self.direction == 'down':
-            self.y[0] += SIZE
-
-        self.draw()
-
-    def draw(self):
-        self.parent_screen.fill((110, 110, 5))
-
-        for i in range(self.length):
-            self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
-        pygame.display.flip()
-
-    def increase_length(self):
-        self.length += 1
-        self.x.append(-1)
-        self.y.append(-1)
 
 class Game:
     def __init__(self):
+        self.network = Network()
+
         pygame.init()
-        self.surface = pygame.display.set_mode((1000, 800))
-        self.snake = Snake(self.surface, 2)
+
+        # self.surface = pygame.display.set_mode((1000, 800))
+        self.Height = 629
+        self.Weight = 1100
+        self.running = True
+        self.surface = pygame.display.set_mode((self.Weight,self.Height))
+        self.background_image = pygame.image.load("data/seaBG.png").convert()
+        self.surface.blit(self.background_image,(0,0))
+        self.snake = Snake(self.surface,self.background_image, 2)
         self.snake.draw()
-        self.apple = Apple(self.surface)
-        self.apple.draw()
+        self.strawberry = Strawberry(self.surface)
+        self.strawberry.draw()
+        if self.strawberry.size == self.snake.size:
+            self.size = self.strawberry.size
+        else:
+            return
+        self.level = 0.3
 
     def is_collision(self, x1, y1, x2, y2):
-        if x1 >= x2 and x1 < x2 + SIZE:
-            if y1 >= y2 and y1 < y2 + SIZE:
+        if x2 <= x1 < x2 + self.size:
+            if y2 <= y1 < y2 + self.size:
+                self.level -= self.level/9
                 return True
         return False
 
+    def is_ban_muoi(self, x1, y1):
+        if x1 < 0 or y1 < 0 or x1 > self.Weight or y1 > self.Height:
+            return True
+        else:
+            return False
+
+    def display_die(self,num):
+        self.display_score()
+        font = pygame.font.SysFont('arial',80)
+        if num % 2 == 1:
+            score2 = font.render(f" Try Again With Space ",True,(255,255,0))
+            self.surface.blit(score2,(120,420))
+
+        font = pygame.font.SysFont('arial',300)
+        die = font.render("you die",True,(255,0,0))
+        self.surface.blit(die,(10,20))
+        print(self.network.send("aaa"))
+
     def display_score(self):
-        font = pygame.font.SysFont('arial',30)
-        score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
+        font = pygame.font.SysFont('arial',60)
+        score = font.render(f"Level : {self.snake.length}",True,(200,200,200))
         self.surface.blit(score,(850,10))
 
     def play(self):
         self.snake.walk()
-        self.apple.draw()
-        self.display_score()
+        self.strawberry.draw()
+        if self.is_ban_muoi(self.snake.x[0], self.snake.y[0]):
+            self.running = False
+        else:
+            self.display_score()
+
         pygame.display.flip()
-
-        if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
+        print(self.snake.x[0], self.snake.y[0], self.strawberry.x, self.strawberry.y)
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.strawberry.x, self.strawberry.y):
             self.snake.increase_length()
-            self.apple.move()
-
+            self.strawberry.move()
 
     def run(self):
-        running = True
-
-        while running:
+        self.network.getP()
+        while self.running:
+            print(self.network.send("aaa"))
+            print(self.network.getP())
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        running = False
+                        self.running = False
 
                     if event.key == K_LEFT:
                         self.snake.move_left()
@@ -127,11 +96,26 @@ class Game:
                         self.snake.move_down()
 
                 elif event.type == QUIT:
-                    running = False
+                    self.running = False
 
             self.play()
+            time.sleep(self.level)
+        num = 0
+        while not self.running:
+            num += 1
+            print(num)
+            pygame.display.flip()
+            self.surface.blit(self.background_image, (0, 0))
+            self.display_die(num)
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        game = Game()
+                        game.run()
+                elif event.type == QUIT:
+                    return
+            time.sleep(.5)
 
-            time.sleep(.1)
 
 if __name__ == '__main__':
     game = Game()

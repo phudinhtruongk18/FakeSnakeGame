@@ -1,7 +1,5 @@
 import pygame
 from network import Network
-from player import Player
-from dautaydethuong import DauTayDeThuong
 
 width = 500
 height = 500
@@ -23,7 +21,7 @@ def main():
     clock = pygame.time.Clock()
 
     while run:
-        clock.tick(60)
+        # clock.tick(60)
         p2 = n.send(p)
 
         for event in pygame.event.get():
