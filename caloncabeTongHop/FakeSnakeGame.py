@@ -59,7 +59,7 @@ class Snake:
     def draw(self):
         self.toaDo.clear()
         for i in range(self.length):
-            self.toaDo.append((self.x[i]+78, self.y[i]+78))
+            self.toaDo.append((self.x[i], self.y[i]))
             if i == 0:
                 self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
             else:
@@ -100,14 +100,18 @@ class AnotherSnake:
 
     def draw(self):
         if self.mau_vitri_another is not None:
+            print(len(self.mau_vitri_another),"cchieu dai")
             for mauVaToaDo in self.mau_vitri_another:
-                for index,toaDo in enumerate(mauVaToaDo[1]):
-                    print(index," index ",toaDo)
-                    if index == 0:
-                        self.parent_screen.blit(self.image, (toaDo[0],toaDo[1]))
-                        continue
-                    pygame.draw.rect(self.parent_screen, mauVaToaDo[0], pygame.Rect(toaDo[0],toaDo[1], 26, 26))
-
+                print(mauVaToaDo,"<- day")
+                try:
+                    for index,toaDo in enumerate(mauVaToaDo[1]):
+                        print(index," index ",toaDo)
+                        if index == 0:
+                            self.parent_screen_image.blit(self.image, (toaDo[0],toaDo[1]))
+                            continue
+                        pygame.draw.rect(self.parent_screen_image, mauVaToaDo[0], pygame.Rect(toaDo[0], toaDo[1], 26, 26))
+                except:
+                    print("None")
     def set_X_and_Y(self,mausac_va_toado_moi):
         self.mau_vitri_another = mausac_va_toado_moi
 
@@ -151,11 +155,14 @@ class Game:
         self.Weight = 1015
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
+        self.surfaceSecond = pygame.display.set_mode((self.Weight,self.Height))
         self.background_image = pygame.image.load("seaBG.jpg").convert()
         self.surface.blit(self.background_image,(0,0))
-        self.snake = Snake(self.surface,self.background_image, 2,(240,168,171))
+        self.surface.blit(self.surfaceSecond,(0,0))
+        # self.surfaceSecond.blit(self.background_image,(0,0))
+        self.snake = Snake(self.surface,self.surfaceSecond, 2,(240,168,171))
         self.snake.draw()
-        self.anotherSnake = AnotherSnake(parent_screen=self.surface,parent_screen_image=self.background_image,
+        self.anotherSnake = AnotherSnake(parent_screen=self.surface,parent_screen_image=self.surfaceSecond,
                                          x=20,y=20,color=(255,255,255))
         self.anotherSnake.draw()
         self.strawberry = Strawberry(self.surface)
@@ -198,9 +205,10 @@ class Game:
     def play(self):
 
         self.surface.blit(self.background_image,(0,0))
+        self.surface.blit(self.surfaceSecond,(0,0))
+        self.anotherSnake.draw()
         self.snake.walk()
         self.strawberry.draw()
-        self.anotherSnake.draw()
         self.display_score()
         pygame.display.flip()
 
@@ -226,7 +234,6 @@ class Game:
 
                     if event.key == K_SPACE:
                         self.snake.dash()
-                        self.level -= self.level / 9
 
                     if event.key == K_RIGHT:
                         self.snake.move_right()
