@@ -19,7 +19,7 @@ class Game:
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
         self.background_image = pygame.image.load("data/seaBG.jpg").convert()
         self.surface.blit(self.background_image,(0,0))
-        self.snake = Snake(self.surface,self.background_image, 2)
+        self.snake = Snake(self.surface,self.background_image, 2,(240,168,171))
         self.snake.draw()
         self.anotherSnake = AnotherSnake(parent_screen=self.surface,parent_screen_image=self.background_image,x=20,y=20,color=(255,255,255))
         self.anotherSnake.draw()
@@ -82,7 +82,7 @@ class Game:
     def run(self):
         self.network.getP()
         while self.running:
-            self.anotherSnake.set_X_and_Y(self.network.send(data=[self.snake.x[0], self.snake.y[0]]))
+            self.anotherSnake.set_X_and_Y(self.network.send(data=[self.snake.color,self.snake.toaDo]))
             print("nhan 2",self.network.getP())
             print("nhan",self.anotherSnake.x,self.anotherSnake.y)
             for event in pygame.event.get():

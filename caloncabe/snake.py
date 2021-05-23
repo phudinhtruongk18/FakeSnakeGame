@@ -2,7 +2,7 @@ import pygame
 
 
 class Snake:
-    def __init__(self, parent_screen,background_image, length):
+    def __init__(self, parent_screen,background_image, length,color):
         self.imageDuoi = pygame.image.load("data/duoi.png").convert()
         self.parent_screen = parent_screen
         self.image = pygame.image.load("data/player.png").convert()
@@ -13,6 +13,8 @@ class Snake:
         self.length = length
         self.x = [self.size]*length
         self.y = [self.size]*length
+        self.toaDo =[]
+        self.color = color
 
     def move_left(self):
         self.direction = 'left'
@@ -45,7 +47,9 @@ class Snake:
         self.draw()
 
     def draw(self):
+        self.toaDo.clear()
         for i in range(self.length):
+            self.toaDo.append((self.x[i]+52, self.y[i]+52))
             if i == 0:
                 self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
             else:
