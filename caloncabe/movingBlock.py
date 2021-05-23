@@ -17,7 +17,7 @@ class Game:
         self.Weight = 1015
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
-        self.background_image = pygame.image.load("data/seaBG.png").convert()
+        self.background_image = pygame.image.load("data/seaBG.jpg").convert()
         self.surface.blit(self.background_image,(0,0))
         self.snake = Snake(self.surface,self.background_image, 2)
         self.snake.draw()

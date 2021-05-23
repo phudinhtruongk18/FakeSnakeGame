@@ -18,10 +18,11 @@ print("Waiting for a connection, Server Started")
 
 
 # players = [Player(0,0,50,50,(255,0,0)), Player(100,100, 50,50, (0,0,255))]
-players = ["nguoichoi0","nguoichoi1","nguoichoi2","nguoichoi3","nguoichoi4","nguoichoi5"]
+# players = ["nguoichoi0","nguoichoi1","nguoichoi2","nguoichoi3","nguoichoi4","nguoichoi5"]
+listplayer = [[(240,168,171),(0,0)]]
 
 def threaded_client(conn, player):
-    conn.send(pickle.dumps([0,0]))
+    conn.send(pickle.dumps(listplayer[0]))
     reply = ""
     while True:
         try:
@@ -45,7 +46,7 @@ def threaded_client(conn, player):
                     conn.sendall(pickle.dumps("StopConnection"))
                     break
 
-            conn.sendall(pickle.dumps(dataTongHop))
+            conn.sendall(pickle.dumps([[(240,168,171),dataTongHop]]))
             print("Sending : ", dataTongHop)
         except:
             break
