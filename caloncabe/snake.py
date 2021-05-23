@@ -49,7 +49,7 @@ class Snake:
     def draw(self):
         self.toaDo.clear()
         for i in range(self.length):
-            self.toaDo.append((self.x[i]+52, self.y[i]+52))
+            self.toaDo.append((self.x[i]+78, self.y[i]+78))
             if i == 0:
                 self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
             else:
