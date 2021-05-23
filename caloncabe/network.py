@@ -26,3 +26,6 @@ class Network:
             return pickle.loads(self.client.recv(2048))
         except socket.error as e:
             print(e)
+        except EOFError as f:
+            print(f)
+            print("Connection Closed")

@@ -45,14 +45,11 @@ class Snake:
         self.draw()
 
     def draw(self):
-        self.parent_screen.blit(self.background_image,(0,0))
-
         for i in range(self.length):
             if i == 0:
                 self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
             else:
                 self.parent_screen.blit(self.imageDuoi, (self.x[i], self.y[i]))
-        pygame.display.flip()
 
     def increase_length(self):
         self.length += 1

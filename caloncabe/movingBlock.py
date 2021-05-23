@@ -1,10 +1,10 @@
 import pygame
 from pygame.locals import *
 import time
-from caloncabe.network import Network
+from network import Network
 from snake import Snake
 from strawberry import Strawberry
-
+from anotherSnake import AnotherSnake
 
 class Game:
     def __init__(self):
@@ -21,13 +21,15 @@ class Game:
         self.surface.blit(self.background_image,(0,0))
         self.snake = Snake(self.surface,self.background_image, 2)
         self.snake.draw()
+        self.anotherSnake = AnotherSnake(parent_screen=self.surface,parent_screen_image=self.background_image,x=20,y=20,color=(255,255,255))
+        self.anotherSnake.draw()
         self.strawberry = Strawberry(self.surface)
         self.strawberry.draw()
         if self.strawberry.size == self.snake.size:
             self.size = self.strawberry.size
         else:
             return
-        self.level = 0.3
+        self.level = 0.1
 
     def is_collision(self, x1, y1, x2, y2):
         if x2 <= x1 < x2 + self.size:
@@ -52,22 +54,27 @@ class Game:
         font = pygame.font.SysFont('arial',300)
         die = font.render("you die",True,(255,0,0))
         self.surface.blit(die,(10,20))
-        print(self.network.send("aaa"))
 
     def display_score(self):
         font = pygame.font.SysFont('arial',60)
         score = font.render(f"Level : {self.snake.length}",True,(200,200,200))
-        self.surface.blit(score,(850,10))
+        self.surface.blit(score,(50,10))
 
     def play(self):
+
+        self.surface.blit(self.background_image,(0,0))
         self.snake.walk()
         self.strawberry.draw()
+        self.anotherSnake.draw()
+        pygame.display.flip()
+
         if self.is_ban_muoi(self.snake.x[0], self.snake.y[0]):
             self.running = False
         else:
             self.display_score()
+        # pygame.display.update()
 
-        pygame.display.flip()
+        # pygame.display.flip()
         print(self.snake.x[0], self.snake.y[0], self.strawberry.x, self.strawberry.y)
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.strawberry.x, self.strawberry.y):
             self.snake.increase_length()
@@ -76,8 +83,9 @@ class Game:
     def run(self):
         self.network.getP()
         while self.running:
-            print(self.network.send("aaa"))
-            print(self.network.getP())
+            self.anotherSnake.set_X_and_Y(self.network.send(data=[self.snake.x[0], self.snake.y[0]]))
+            print("nhan 2",self.network.getP())
+            print("nhan",self.anotherSnake.x,self.anotherSnake.y)
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -100,6 +108,8 @@ class Game:
 
             self.play()
             time.sleep(self.level)
+
+        self.network.send("ENDGAME")
         num = 0
         while not self.running:
             num += 1
@@ -114,7 +124,7 @@ class Game:
                         game.run()
                 elif event.type == QUIT:
                     return
-            time.sleep(.5)
+            time.sleep(.1)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,6 @@ class Strawberry:
 
     def draw(self):
         self.parent_screen.blit(self.image, (self.x, self.y))
-        pygame.display.flip()
 
     def move(self):
         self.x = random.randint(1, 25) * self.size
