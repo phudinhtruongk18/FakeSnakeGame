@@ -13,8 +13,8 @@ class Game:
         pygame.init()
 
         # self.surface = pygame.display.set_mode((1000, 800))
-        self.Height = 629
-        self.Weight = 1100
+        self.Height = 694
+        self.Weight = 1015
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
         self.background_image = pygame.image.load("data/seaBG.png").convert()
@@ -48,17 +48,17 @@ class Game:
         self.display_score()
         font = pygame.font.SysFont('arial',80)
         if num % 2 == 1:
-            score2 = font.render(f" Try Again With Space ",True,(255,255,0))
+            score2 = font.render(f" Try Again With Space ",True,(238,147,86))
             self.surface.blit(score2,(120,420))
 
         font = pygame.font.SysFont('arial',300)
-        die = font.render("you die",True,(255,0,0))
+        die = font.render("you die",True,(107,58,73))
         self.surface.blit(die,(10,20))
 
     def display_score(self):
-        font = pygame.font.SysFont('arial',60)
-        score = font.render(f"Level : {self.snake.length}",True,(200,200,200))
-        self.surface.blit(score,(50,10))
+        font = pygame.font.SysFont('arial',30)
+        score = font.render(f"Level : {self.snake.length}",True,(255,20,147))
+        self.surface.blit(score,(870,10))
 
     def play(self):
 
@@ -66,12 +66,11 @@ class Game:
         self.snake.walk()
         self.strawberry.draw()
         self.anotherSnake.draw()
+        self.display_score()
         pygame.display.flip()
 
         if self.is_ban_muoi(self.snake.x[0], self.snake.y[0]):
             self.running = False
-        else:
-            self.display_score()
         # pygame.display.update()
 
         # pygame.display.flip()
