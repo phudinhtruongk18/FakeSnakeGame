@@ -125,7 +125,9 @@ class Network:
         self.server = "172.105.226.101"
         self.port = 6969
         self.addr = (self.server, self.port)
+        # self.client.get
         self.p = self.connect()
+        self.mineIP = ""
 
     def getP(self):
         return self.p
@@ -133,8 +135,9 @@ class Network:
     def connect(self):
         try:
             self.client.connect(self.addr)
-            return pickle.loads(self.client.recv(2048))
+            return self.client.recv(2048).decode()
         except:
+            print("Hok the ket noi")
             pass
 
     def send(self, data):
@@ -166,7 +169,7 @@ class Game:
         self.surface.blit(self.background_image,(0,0))
         self.surface.blit(self.surfaceSecond,(0,0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
-        self.snake = Snake(self.surface,self.surfaceSecond, 2,(10,180,255))
+        self.snake = Snake(self.surface,self.surfaceSecond, 2,(255,182,193))
         self.snake.draw()
         self.anotherSnake = AnotherSnake(parent_screen=self.surface,parent_screen_image=self.surfaceSecond,
                                          x=20,y=20)
@@ -221,19 +224,19 @@ class Game:
         if self.is_ban_muoi(self.snake.x[0], self.snake.y[0]):
             self.running = False
 
-        # if self.is_collision(self.snake.x[0], self.snake.y[0], self.strawberry.x, self.strawberry.y):
-        #     self.snake.increase_length()
-        #     self.strawberry.move()
-
     def run(self):
-        self.network.getP()
+        self.network.mineIP = self.network.getP()
         while self.running:
 
             dataNhanDuoc = self.network.send(data=[self.snake.color, self.snake.toaDo])
             if dataNhanDuoc is not None:
-                dautayXY, toa_do_nguoi_choi_khac = dataNhanDuoc[0],dataNhanDuoc[1]
+                ip_tang_diem,dautayXY, toa_do_nguoi_choi_khac = dataNhanDuoc[0],dataNhanDuoc[1],dataNhanDuoc[2]
                 self.anotherSnake.set_X_and_Y(toa_do_nguoi_choi_khac)
                 self.strawberry.move(dautayXY[0],dautayXY[1])
+                if ip_tang_diem is not None:
+                    if self.tui_la_nguoi_may_man(ip_tang_diem):
+                        self.snake.increase_length()
+
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -276,6 +279,11 @@ class Game:
                 elif event.type == QUIT:
                     return
             time.sleep(.1)
+
+    def tui_la_nguoi_may_man(self, ip_tang_diem):
+        print(ip_tang_diem)
+        print(self.network.mineIP)
+        return self.network.mineIP == ip_tang_diem[0]
 
 
 if __name__ == '__main__':

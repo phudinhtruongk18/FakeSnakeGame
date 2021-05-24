@@ -37,15 +37,16 @@ def is_va_cham_le(x1, y1, x2, y2):
 #         return False
 
 
-def threaded_client(conn, player):
+def threaded_client(conn, addr):
     vitri = len(listplayer)
-    conn.send(pickle.dumps(listplayer))
+    conn.send(str.encode(addr[0]))
+    print("ip la ",addr[0])
     listplayer.append([])
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
             print("Received: ", data)
-
+            ip_tang_diem = None
             if not data:
                 print("Disconnected")
                 break
@@ -58,9 +59,11 @@ def threaded_client(conn, player):
             headXY = data[1][0]
             if is_va_cham_le(headXY[0],headXY[1],dautay.x,dautay.y):
                 dautay.move()
+                ip_tang_diem = addr
+
             data.append((dautay.x,dautay.y))
             listplayer[vitri] = data
-            du_lieu_gui_di = ((dautay.x,dautay.y),listplayer)
+            du_lieu_gui_di = (ip_tang_diem,(dautay.x,dautay.y),listplayer)
             conn.sendall(pickle.dumps(du_lieu_gui_di))
             print("Sending : ", du_lieu_gui_di)
         except:
@@ -72,4 +75,4 @@ def threaded_client(conn, player):
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
-    start_new_thread(threaded_client, (conn, 0))
+    start_new_thread(threaded_client, (conn, addr))
