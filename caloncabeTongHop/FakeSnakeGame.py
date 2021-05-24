@@ -3,14 +3,13 @@ import random
 import socket
 import pygame
 from pygame.locals import *
-import time
-
+from textInput import TextInputBox
 
 class Snake:
     def __init__(self, parent_screen,background_image, length,color):
-        self.imageDuoi = pygame.image.load("duoi.png").convert()
+        self.imageDuoi = pygame.image.load("hinhanh18cong/duoi.png").convert()
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("player.png").convert()
+        self.image = pygame.image.load("hinhanh18cong/player.png").convert()
         self.size = self.image.get_size()[0]
         self.direction = 'down'
         self.background_image = background_image
@@ -75,7 +74,7 @@ class Snake:
 class Strawberry:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("dautaydethuong.png").convert()
+        self.image = pygame.image.load("hinhanh18cong/dautaydethuong.png").convert()
         self.size = self.image.get_size()[0]
         self.x = 20 * self.size
         self.y = 5 * self.size
@@ -95,7 +94,7 @@ class AnotherSnake:
     def __init__(self,parent_screen, parent_screen_image, x, y):
         self.parent_screen = parent_screen
         self.parent_screen_image = parent_screen_image
-        self.image = pygame.image.load("player2.png").convert()
+        self.image = pygame.image.load("hinhanh18cong/player2.png").convert()
         self.x = x
         self.y = y
         self.rect = (x, y, 26,26)
@@ -159,13 +158,13 @@ class Game:
 
         pygame.init()
         pygame.display.set_caption('Fake Snake Game')
-
+        self.clock = pygame.time.Clock()
         self.Height = 694
         self.Weight = 1015
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
         self.surfaceSecond = pygame.display.set_mode((self.Weight,self.Height))
-        self.background_image = pygame.image.load("seaBG.jpg").convert()
+        self.background_image = pygame.image.load("hinhanh18cong/seaBG.jpg").convert()
         self.surface.blit(self.background_image,(0,0))
         self.surface.blit(self.surfaceSecond,(0,0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
@@ -180,7 +179,7 @@ class Game:
             self.size = self.strawberry.size
         else:
             return
-        self.level = 0.08
+        self.level = 60
 
     def is_collision(self, x1, y1, x2, y2):
         if x2 <= x1 < x2 + self.size:
@@ -225,6 +224,29 @@ class Game:
             self.running = False
 
     def run(self):
+        #
+
+        font = pygame.font.SysFont(None, 100)
+        text_input_box = TextInputBox(50, 50, 400, font)
+        group = pygame.sprite.Group(text_input_box)
+
+        run = True
+        while run:
+            self.clock.tick(60)
+            event_list = pygame.event.get()
+            for event in event_list:
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        run = False
+                if event.type == pygame.QUIT:
+                    run = False
+            group.update(event_list)
+
+            self.surface.fill(0)
+            group.draw(self.surface)
+            pygame.display.flip()
+
+        #
         self.network.mineIP = self.network.getP()
         while self.running:
 
@@ -261,7 +283,8 @@ class Game:
                     self.running = False
 
             self.play()
-            time.sleep(self.level)
+            self.clock.tick(self.level)
+            # time.sleep()
 
         self.network.send("ENDGAME")
         num = 0
@@ -278,7 +301,7 @@ class Game:
                         game.run()
                 elif event.type == QUIT:
                     return
-            time.sleep(.1)
+            self.clock.tick(5)
 
     def tui_la_nguoi_may_man(self, ip_tang_diem):
         print(ip_tang_diem)
