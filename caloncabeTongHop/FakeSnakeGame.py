@@ -7,9 +7,9 @@ from textInput import TextInputBox
 
 class Snake:
     def __init__(self, parent_screen,background_image, length,color):
-        self.imageDuoi = pygame.image.load("hinhanh18cong/duoi.png").convert()
+        self.imageDuoi = pygame.image.load("tainguyen/duoi.png").convert()
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("hinhanh18cong/player.png").convert()
+        self.image = pygame.image.load("tainguyen/player.png").convert()
         self.size = self.image.get_size()[0]
         self.direction = 'down'
         self.background_image = background_image
@@ -74,7 +74,7 @@ class Snake:
 class Strawberry:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("hinhanh18cong/dautaydethuong.png")
+        self.image = pygame.image.load("tainguyen/dautaydethuong.png")
         self.size = self.image.get_size()[0]
         self.x = 20 * self.size
         self.y = 5 * self.size
@@ -94,7 +94,7 @@ class AnotherSnake:
     def __init__(self,parent_screen, parent_screen_image, x, y):
         self.parent_screen = parent_screen
         self.parent_screen_image = parent_screen_image
-        self.image = pygame.image.load("hinhanh18cong/player2.png").convert()
+        self.image = pygame.image.load("tainguyen/player2.png").convert()
         self.x = x
         self.y = y
         self.rect = (x, y, 26,26)
@@ -164,7 +164,7 @@ class Game:
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
         self.surfaceSecond = pygame.display.set_mode((self.Weight,self.Height))
-        self.background_image = pygame.image.load("hinhanh18cong/seaBG.png").convert()
+        self.background_image = pygame.image.load("tainguyen/seaBG.png").convert()
         self.surface.blit(self.background_image,(0,0))
         self.surface.blit(self.surfaceSecond,(0,0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
