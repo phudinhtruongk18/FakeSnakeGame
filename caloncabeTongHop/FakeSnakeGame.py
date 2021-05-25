@@ -74,7 +74,7 @@ class Snake:
 class Strawberry:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("hinhanh18cong/dautaydethuong.png").convert()
+        self.image = pygame.image.load("hinhanh18cong/dautaydethuong.png")
         self.size = self.image.get_size()[0]
         self.x = 20 * self.size
         self.y = 5 * self.size
@@ -104,7 +104,7 @@ class AnotherSnake:
     def draw(self):
         if self.mau_vitri_another is not None:
             print(len(self.mau_vitri_another),"so luong nguoi choi")
-            for mauVaToaDo in self.mau_vitri_another:
+            for indexmau,mauVaToaDo in enumerate(self.mau_vitri_another):
                 try:
                     for index,toaDo in enumerate(mauVaToaDo[1]):
                         if index == 0:
@@ -112,7 +112,7 @@ class AnotherSnake:
                             continue
                         pygame.draw.rect(self.parent_screen_image, mauVaToaDo[0], pygame.Rect(toaDo[0], toaDo[1], 26, 26))
                 except Exception as e:
-                    print("None " ,e)
+                    print("None " ,e,indexmau)
 
     def set_X_and_Y(self,mausac_va_toado_moi):
         self.mau_vitri_another = mausac_va_toado_moi
@@ -164,7 +164,7 @@ class Game:
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight,self.Height))
         self.surfaceSecond = pygame.display.set_mode((self.Weight,self.Height))
-        self.background_image = pygame.image.load("hinhanh18cong/seaBG.jpg").convert()
+        self.background_image = pygame.image.load("hinhanh18cong/seaBG.png").convert()
         self.surface.blit(self.background_image,(0,0))
         self.surface.blit(self.surfaceSecond,(0,0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
@@ -180,6 +180,7 @@ class Game:
         else:
             return
         self.level = 60
+        self.playerName = "No Name"
 
     def is_collision(self, x1, y1, x2, y2):
         if x2 <= x1 < x2 + self.size:
@@ -208,8 +209,13 @@ class Game:
 
     def display_score(self):
         font = pygame.font.SysFont('arial',30)
-        score = font.render(f"Level : {self.snake.length}",True,(255,20,147))
-        self.surface.blit(score,(870,10))
+        score = font.render(f"{self.playerName} : {self.snake.length}",True,(255,20,147))
+        self.surface.blit(score,(670,10))
+
+    def display_tutorial(self):
+        font = pygame.font.SysFont('arial',30)
+        score = font.render(f"  Type your name and Enter !",True,(255,255,255))
+        self.surface.blit(score,(300,250))
 
     def play(self):
         self.surface.blit(self.background_image,(0,0))
@@ -223,42 +229,46 @@ class Game:
         if self.is_ban_muoi(self.snake.x[0], self.snake.y[0]):
             self.running = False
 
-    def run(self):
-        #
+    def gui_va_phan_tach_du_lieu(self):
+        dataNhanDuoc = self.network.send(data=[self.snake.color, self.snake.toaDo])
+        if dataNhanDuoc is not None:
+            ip_tang_diem, dautayXY, toa_do_nguoi_choi_khac = dataNhanDuoc[0], dataNhanDuoc[1], dataNhanDuoc[2]
+            self.anotherSnake.set_X_and_Y(toa_do_nguoi_choi_khac)
+            self.strawberry.move(dautayXY[0], dautayXY[1])
+            if ip_tang_diem is not None:
+                if self.tui_la_nguoi_may_man(ip_tang_diem):
+                    self.snake.increase_length()
 
-        font = pygame.font.SysFont(None, 100)
-        text_input_box = TextInputBox(50, 50, 400, font)
+    def getPlayerName(self):
+        font = pygame.font.SysFont("arial", 80)
+        text_input_box = TextInputBox(210, 300, 600, font)
         group = pygame.sprite.Group(text_input_box)
-
         run = True
         while run:
             self.clock.tick(60)
             event_list = pygame.event.get()
             for event in event_list:
                 if event.type == KEYDOWN:
-                    if event.key == K_SPACE:
+                    if event.key == K_RETURN:
                         run = False
                 if event.type == pygame.QUIT:
                     run = False
             group.update(event_list)
 
             self.surface.fill(0)
+            self.display_tutorial()
             group.draw(self.surface)
             pygame.display.flip()
+        return text_input_box.text
 
-        #
+    def run(self):
+
+        self.playerName = self.getPlayerName()
+        print(self.playerName)
         self.network.mineIP = self.network.getP()
         while self.running:
 
-            dataNhanDuoc = self.network.send(data=[self.snake.color, self.snake.toaDo])
-            if dataNhanDuoc is not None:
-                ip_tang_diem,dautayXY, toa_do_nguoi_choi_khac = dataNhanDuoc[0],dataNhanDuoc[1],dataNhanDuoc[2]
-                self.anotherSnake.set_X_and_Y(toa_do_nguoi_choi_khac)
-                self.strawberry.move(dautayXY[0],dautayXY[1])
-                if ip_tang_diem is not None:
-                    if self.tui_la_nguoi_may_man(ip_tang_diem):
-                        self.snake.increase_length()
-
+            self.gui_va_phan_tach_du_lieu()
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
@@ -284,9 +294,8 @@ class Game:
 
             self.play()
             self.clock.tick(self.level)
-            # time.sleep()
 
-        self.network.send("ENDGAME")
+        self.network.send(self.playerName+"ENDGAME"+str(self.snake.length)+"ENDGAME"+str(self.network.mineIP))
         num = 0
         while not self.running:
             num += 1

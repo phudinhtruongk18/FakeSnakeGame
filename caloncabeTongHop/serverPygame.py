@@ -42,6 +42,7 @@ def threaded_client(conn, addr):
     conn.send(str.encode(addr[0]))
     print("ip la ",addr[0])
     listplayer.append([])
+    data = None
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
@@ -50,19 +51,14 @@ def threaded_client(conn, addr):
             if not data:
                 print("Disconnected")
                 break
-            else:
-                if data == "ENDGAME":
-                    conn.sendall(pickle.dumps("DIe"))
-                    conn.sendall(pickle.dumps("StopConnection"))
-                    break
-            # headX,headY = data[1]          [0] van de la so sanh voi cai cua no chu khong phai vi tri dau tien
             headXY = data[1][0]
             if is_va_cham_le(headXY[0],headXY[1],dautay.x,dautay.y):
                 dautay.move()
                 ip_tang_diem = addr
 
-            data.append((dautay.x,dautay.y))
-            listplayer[vitri] = data
+            du_lieu_rieng = data[:]
+            du_lieu_rieng.append((dautay.x,dautay.y))
+            listplayer[vitri] = du_lieu_rieng
             du_lieu_gui_di = (ip_tang_diem,(dautay.x,dautay.y),listplayer)
             conn.sendall(pickle.dumps(du_lieu_gui_di))
             print("Sending : ", du_lieu_gui_di)
@@ -70,6 +66,10 @@ def threaded_client(conn, addr):
             break
     print("Lost connection")
     conn.close()
+    if "ENDGAME" in data:
+        data_player = str(data).split("ENDGAME")
+        f = open("data/playerData.txt", "a")
+        f.write(str(data_player)+"\n")
 
 
 while True:

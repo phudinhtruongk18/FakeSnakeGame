@@ -1,5 +1,6 @@
 import pygame
 
+
 class TextInputBox(pygame.sprite.Sprite):
     def __init__(self, x, y, w, font):
         super().__init__()
@@ -8,7 +9,7 @@ class TextInputBox(pygame.sprite.Sprite):
         self.pos = (x, y)
         self.width = w
         self.font = font
-        self.active = False
+        self.active = True
         self.text = ""
         self.render_text()
 
