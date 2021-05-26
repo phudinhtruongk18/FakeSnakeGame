@@ -121,20 +121,20 @@ class AnotherSnake:
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "172.105.226.101"
-        self.port = 6969
+        self.server = "139.162.49.190"
+        self.port = 65432
         self.addr = (self.server, self.port)
         # self.client.get
         self.p = self.connect()
         self.mineIP = ""
 
-    def getP(self):
+    def getPlayerInfor(self):
         return self.p
 
     def connect(self):
         try:
             self.client.connect(self.addr)
-            return self.client.recv(2048).decode()
+            return self.client.recv(4096).decode()
         except:
             print("Hok the ket noi")
             pass
@@ -145,6 +145,14 @@ class Network:
             data = pickle.loads(self.client.recv(2048))
             return data
             # tuong ung voi dautayXY (mau sac, vi tri)
+        except pickle.UnpicklingError as fuck:
+            print("het slot")
+            # newgame = Game()
+            # newgame.network.port += 1
+            # print(newgame.network.port)
+            # newgame.run()
+            # return None
+
         except socket.error as e:
             print(e)
             print("soc")
@@ -168,7 +176,7 @@ class Game:
         self.surface.blit(self.background_image,(0,0))
         self.surface.blit(self.surfaceSecond,(0,0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
-        self.snake = Snake(self.surface,self.surfaceSecond, 2,(255,182,193))
+        self.snake = Snake(self.surface,self.surfaceSecond, 2,("#5404CA"))
         self.snake.draw()
         self.anotherSnake = AnotherSnake(parent_screen=self.surface,parent_screen_image=self.surfaceSecond,
                                          x=20,y=20)
@@ -179,15 +187,16 @@ class Game:
             self.size = self.strawberry.size
         else:
             return
-        self.level = 60
+        self.level = 3
         self.playerName = "No Name"
 
-    def is_collision(self, x1, y1, x2, y2):
-        if x2 <= x1 < x2 + self.size:
-            if y2 <= y1 < y2 + self.size:
-                self.level -= self.level/9
-                return True
-        return False
+    # def is_collision(self, x1, y1, x2, y2):
+    #     if x2 <= x1 < x2 + self.size:
+    #         if y2 <= y1 < y2 + self.size:
+    #             self.level += 10
+    #             print(self.level)
+    #             return True
+    #     return False
 
     def is_ban_muoi(self, x1, y1):
         if x1 < 0 or y1 < 0 or x1 > self.Weight or y1 > self.Height:
@@ -261,11 +270,15 @@ class Game:
             pygame.display.flip()
         return text_input_box.text
 
-    def run(self):
+    def gui_va_dinh_danh(self):
+        self.network.mineIP = self.network.getPlayerInfor()
+        self.playerName, self.snake.color = self.network.send(self.playerName)
 
+    def run(self):
+        print("run")
         self.playerName = self.getPlayerName()
         print(self.playerName)
-        self.network.mineIP = self.network.getP()
+        self.gui_va_dinh_danh()
         while self.running:
 
             self.gui_va_phan_tach_du_lieu()
@@ -315,6 +328,8 @@ class Game:
     def tui_la_nguoi_may_man(self, ip_tang_diem):
         print(ip_tang_diem)
         print(self.network.mineIP)
+        self.level += 2
+        print(self.level)
         return self.network.mineIP == ip_tang_diem[0]
 
 
