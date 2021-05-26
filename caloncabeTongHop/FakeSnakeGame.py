@@ -189,6 +189,9 @@ class Game:
             return
         self.level = 3
         self.playerName = "No Name"
+        self.eatSound = pygame.mixer.Sound("tainguyen/eat.wav")
+        self.zoGameSound = pygame.mixer.Sound("tainguyen/heheboiz.wav")
+
 
     # def is_collision(self, x1, y1, x2, y2):
     #     if x2 <= x1 < x2 + self.size:
@@ -217,9 +220,9 @@ class Game:
         self.surface.blit(self.surfaceSecond,(0,0))
 
     def display_score(self):
-        font = pygame.font.SysFont('arial',30)
-        score = font.render(f"{self.playerName} : {self.snake.length}",True,(255,20,147))
-        self.surface.blit(score,(670,10))
+        font = pygame.font.SysFont('arial',18,bold=True)
+        score = font.render(f"{self.playerName} : {self.snake.length}",True,("#7259E3"))
+        self.surface.blit(score,(770,5))
 
     def display_tutorial(self):
         font = pygame.font.SysFont('arial',30)
@@ -247,6 +250,7 @@ class Game:
             if ip_tang_diem is not None:
                 if self.tui_la_nguoi_may_man(ip_tang_diem):
                     self.snake.increase_length()
+                    self.eatSound.play()
 
     def getPlayerName(self):
         font = pygame.font.SysFont("arial", 80)
@@ -261,7 +265,7 @@ class Game:
                     if event.key == K_RETURN:
                         run = False
                 if event.type == pygame.QUIT:
-                    run = False
+                    return "JustQuitPlease"
             group.update(event_list)
 
             self.surface.fill(0)
@@ -277,7 +281,10 @@ class Game:
     def run(self):
         print("run")
         self.playerName = self.getPlayerName()
+        if self.playerName == "JustQuitPlease":
+            return
         print(self.playerName)
+        self.zoGameSound.play()
         self.gui_va_dinh_danh()
         while self.running:
 
@@ -321,6 +328,7 @@ class Game:
                     if event.key == K_SPACE:
                         game = Game()
                         game.run()
+                        return
                 elif event.type == QUIT:
                     return
             self.clock.tick(5)

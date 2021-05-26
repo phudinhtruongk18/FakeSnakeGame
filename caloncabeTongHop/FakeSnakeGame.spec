@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['FakeSnakeGame.py'],
-             pathex=['C:\\Users\\asus\\Desktop\\bruh\\Online_Pygame\\caloncabeTongHop'],
+             pathex=['C:\\Users\\asus\\Desktop\\Online_Pygame\\caloncabeTongHop'],
              binaries=[],
              datas=[],
              hiddenimports=[],
