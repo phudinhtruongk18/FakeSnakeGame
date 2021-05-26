@@ -1,5 +1,4 @@
 import pickle
-import random
 import socket
 import pygame
 from pygame.locals import *
@@ -127,9 +126,11 @@ class Network:
         self.port = 65432
         # self.client.get
         self.mineIP = ""
+        self.addr = ()
+        self.p = ""
 
     def getPlayerInfor(self):
-        print("toi ne ",self.port)
+        print("toi ne ", self.port)
         self.addr = (self.server, self.port)
         self.p = self.connect()
         return self.p
@@ -138,9 +139,8 @@ class Network:
         try:
             self.client.connect(self.addr)
             return self.client.recv(4096).decode()
-        except:
-            print("Hok the ket noi")
-            pass
+        except socket.error as e:
+            print("Hok the ket noi ", e)
 
     def send(self, data):
         try:
@@ -172,7 +172,7 @@ class Game:
         self.surface.blit(self.background_image, (0, 0))
         self.surface.blit(self.surfaceSecond, (0, 0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
-        self.snake = Snake(self.surface, self.surfaceSecond, 2, ("#5404CA"))
+        self.snake = Snake(self.surface, self.surfaceSecond, 2, "#5404CA")
         self.snake.draw()
         self.anotherSnake = AnotherSnake(parent_screen=self.surface, parent_screen_image=self.surfaceSecond,
                                          x=20, y=20)
@@ -208,7 +208,7 @@ class Game:
 
     def display_score(self):
         font = pygame.font.SysFont('arial', 18, bold=True)
-        score = font.render(f"{self.playerName} : {self.snake.length}", True, ("#CEFAD9"))
+        score = font.render(f"{self.playerName} : {self.snake.length}", True, (206, 250, 217))
         self.surface.blit(score, (770, 5))
 
     def display_tutorial(self):
@@ -311,7 +311,8 @@ class Game:
             newgame.run()
             return
         else:
-            self.network.send(self.playerName + "ENDGAME" + str(self.snake.length) + "ENDGAME" + str(self.network.mineIP))
+            self.network.send(
+                self.playerName + "ENDGAME" + str(self.snake.length) + "ENDGAME" + str(self.network.mineIP))
             num = 0
             while not self.running:
                 num += 1
@@ -322,13 +323,12 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == KEYDOWN:
                         if event.key == K_SPACE:
-                            game = Game()
-                            game.run()
+                            niugem = Game()
+                            niugem.run()
                             return
                     elif event.type == QUIT:
                         return
                 self.clock.tick(5)
-
 
     def tui_la_nguoi_may_man(self, ip_tang_diem):
         print(ip_tang_diem)
