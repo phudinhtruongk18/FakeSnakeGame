@@ -30,7 +30,7 @@ def is_va_cham_le(x1, y1, x2, y2):
 
 
 namesIDs = []
-with open("C:\\Users\\Administrator\\pygame\\data\\users.txt", "r", encoding="utf8") as f:
+with open("data\\users.txt", "r", encoding="utf8") as f:
     x = f.read()
     z = x.rstrip().split("\n")
     for nameWithID in z:

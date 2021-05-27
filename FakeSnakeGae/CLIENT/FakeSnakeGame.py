@@ -82,12 +82,16 @@ class Strawberry:
         self.x = 20 * self.size
         self.y = 5 * self.size
         self.count = 0
+        self.animation = 0
 
     def draw(self):
         try:
             self.count += 1
-            self.parent_screen.blit(self.images[self.count], (self.x, self.y))
-            if self.count == 5:
+            self.parent_screen.blit(self.images[self.animation], (self.x, self.y))
+            if self.count == 7:
+                self.animation += 1
+                if self.animation == 4:
+                    self.animation = 0
                 self.count = 0
         except Exception as e:
             print("chua co du lieu dau tay", e, "du lieu day tay ->", self.x, self.y)
