@@ -74,14 +74,21 @@ class Snake:
 class Strawberry:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("tainguyen/dautaydethuong.png")
-        self.size = self.image.get_size()[0]
+        self.images = [pygame.image.load("tainguyen/dautay1.png"),pygame.image.load("tainguyen/dautay2.png"),
+                      pygame.image.load("tainguyen/dautay3.png"),pygame.image.load("tainguyen/dautay4.png"),
+                      pygame.image.load("tainguyen/dautay5.png")]
+        # self.size = self.image.get_size()[0]
+        self.size = 26
         self.x = 20 * self.size
         self.y = 5 * self.size
+        self.count = 0
 
     def draw(self):
         try:
-            self.parent_screen.blit(self.image, (self.x, self.y))
+            self.count += 1
+            self.parent_screen.blit(self.images[self.count], (self.x, self.y))
+            if self.count == 5:
+                self.count = 0
         except Exception as e:
             print("chua co du lieu dau tay", e, "du lieu day tay ->", self.x, self.y)
 
@@ -122,7 +129,7 @@ class AnotherSnake:
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "139.162.49.190"
+        self.server = "192.168.2.58"
         self.port = 65432
         # self.client.get
         self.mineIP = ""

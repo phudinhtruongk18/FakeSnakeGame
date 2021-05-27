@@ -4,7 +4,7 @@ from _thread import *
 import pickle
 from DauTayServer import StrawberryServer
 
-server = "139.162.49.190"
+server = "192.168.2.58"
 port = 65432
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
