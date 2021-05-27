@@ -36,7 +36,7 @@ with open("data\\users.txt", "r", encoding="utf8") as f:
     for nameWithID in z:
         nameID = nameWithID.split("\t")
         namesIDs.append(nameID)
-
+print(namesIDs)
 
 def random_color2():
     color = "#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)])
