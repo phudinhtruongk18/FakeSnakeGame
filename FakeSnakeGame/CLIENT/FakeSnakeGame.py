@@ -29,14 +29,14 @@ class Game:
                                          x=20, y=20)
         self.anotherSnake.draw()
         self.strawberry = Strawberry(self.surface)
-        self.anggryDauTay = Boss(self.surface,26,52)
+        self.anggryDauTay = Boss(self.surface,900,52)
         self.strawberry.draw()
         self.anggryDauTay.draw()
         if self.strawberry.size == self.snake.size:
             self.size = self.strawberry.size
         else:
             return
-        self.level = 5
+        self.level = 10
         self.playerName = "No Name"
         self.eatSound = pygame.mixer.Sound("tainguyen/amthanh/eat.wav")
         self.zoGameSound = pygame.mixer.Sound("tainguyen/amthanh/heheboiz.wav")
@@ -74,13 +74,11 @@ class Game:
 
         self.surface.blit(self.background_image, (0, 0))
         self.surface.blit(self.surfaceSecond, (0, 0))
-        # self.anggryDauTay.move_down()
-        self.anggryDauTay.walk()
-        self.anggryDauTay.draw()
         for nangluc in self.sieunangluc:
             nangluc.draw()
         self.anotherSnake.draw()
         self.snake.walk()
+        self.anggryDauTay.duoi_theo_nguoi_choi(self.snake.x[0],self.snake.y[0])
         self.strawberry.draw()
         self.display_score()
         pygame.display.flip()
@@ -139,8 +137,8 @@ class Game:
         while self.running:
             try:
                 self.gui_va_phan_tach_du_lieu()
-            except pickle.UnpicklingError as fuck:
-                print("het slot", fuck)
+            except pickle.UnpicklingError as f:
+                print("het slot", f)
                 hetSlot = True
                 break
             for event in pygame.event.get():
@@ -164,7 +162,7 @@ class Game:
                     self.running = False
 
             for nangluc in self.sieunangluc:
-                if nangluc.x < self.Weight and nangluc.y < self.Height:
+                if nangluc.is_show:
                     nangluc.xulyhuongdan()
                 else:
                     self.sieunangluc.pop(self.sieunangluc.index(nangluc))
@@ -202,7 +200,7 @@ class Game:
     def tui_la_nguoi_may_man(self, ip_tang_diem):
         print(ip_tang_diem)
         print(self.network.mineIP)
-        self.level += 1
+        # self.level += 1
         print(self.level)
         return self.network.mineIP == ip_tang_diem[0]
 

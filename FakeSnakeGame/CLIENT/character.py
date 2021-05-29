@@ -1,42 +1,39 @@
 import pygame
-
+from something import Knife
 
 class Boss:
     def __init__(self, parent_screen,x,y):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("tainguyen/hinhanh/boss.png")
-        self.size = self.image.get_size()[0]
-        self.direction = 'down'
+        self.render_image = pygame.image.load("tainguyen/hinhanh/boss.png")
+        self.size = self.render_image.get_size()[0]
         self.x = x
         self.y = y
+        self.count = 0
+        self.knifes = []
 
-    def move_left(self):
-        self.direction = 'left'
-
-    def move_right(self):
-        self.direction = 'right'
-
-    def move_up(self):
-        self.direction = 'up'
-
-    def move_down(self):
-        self.direction = 'down'
-
-    def walk(self):
-        # update head
-        if self.direction == 'left':
-            self.x -= self.size
-        if self.direction == 'right':
-            self.x += self.size
-        if self.direction == 'up':
-            self.y -= self.size
-        if self.direction == 'down':
-            self.y += self.size
-
+    def duoi_theo_nguoi_choi(self,snake_x,snake_y):
+        print(snake_y,self.y+78)
+        if self.y + 52 == snake_y:
+            print("not tracing")
+        elif self.y + 52 < snake_y:
+            self.y += 13
+        else:
+            self.y -= 13
         self.draw()
+        self.count += 1
+        if self.count > 10:
+            self.knifes.append(Knife(self.parent_screen, self.x, self.y+52, "left"))
+            self.count = 0
 
     def draw(self):
-        self.parent_screen.blit(self.image, (self.x, self.y))
+        for temp in self.knifes:
+            temp.xulyhuongdan()
+            temp.draw()
+            if temp.x < 0:
+                self.knifes.pop(self.knifes.index(temp))
+
+        self.parent_screen.blit(self.render_image, (self.x, self.y))
+
 
 
 class Snake:
