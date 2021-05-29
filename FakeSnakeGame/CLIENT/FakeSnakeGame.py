@@ -3,7 +3,8 @@ import pygame
 from pygame.locals import *
 from textInput import TextInputBox
 from network import Network
-from character import Snake, Strawberry, AnotherSnake
+from character import Snake, Strawberry, AnotherSnake, Boss
+from something import LaserShot
 
 
 class Game:
@@ -18,25 +19,28 @@ class Game:
         self.running = True
         self.surface = pygame.display.set_mode((self.Weight, self.Height))
         self.surfaceSecond = pygame.display.set_mode((self.Weight, self.Height))
-        self.background_image = pygame.image.load("tainguyen/seaBG.png").convert()
+        self.background_image = pygame.image.load("tainguyen/hinhanh/seaBG.png").convert()
         self.surface.blit(self.background_image, (0, 0))
         self.surface.blit(self.surfaceSecond, (0, 0))
         # self.surfaceSecond.blit(self.background_image,(0,0))
-        self.snake = Snake(self.surface, self.surfaceSecond, 2, "#5404CA")
+        self.snake = Snake(self.surfaceSecond, 2, "#5404CA")
         self.snake.draw()
         self.anotherSnake = AnotherSnake(parent_screen=self.surface, parent_screen_image=self.surfaceSecond,
                                          x=20, y=20)
         self.anotherSnake.draw()
         self.strawberry = Strawberry(self.surface)
+        self.anggryDauTay = Boss(self.surface,26,52)
         self.strawberry.draw()
+        self.anggryDauTay.draw()
         if self.strawberry.size == self.snake.size:
             self.size = self.strawberry.size
         else:
             return
-        self.level = 3
+        self.level = 5
         self.playerName = "No Name"
-        self.eatSound = pygame.mixer.Sound("tainguyen/eat.wav")
-        self.zoGameSound = pygame.mixer.Sound("tainguyen/heheboiz.wav")
+        self.eatSound = pygame.mixer.Sound("tainguyen/amthanh/eat.wav")
+        self.zoGameSound = pygame.mixer.Sound("tainguyen/amthanh/heheboiz.wav")
+        self.sieunangluc = []
 
     def is_ban_muoi(self, x1, y1):
         if x1 < 0 or y1 < 0 or x1 > self.Weight or y1 > self.Height:
@@ -67,8 +71,14 @@ class Game:
         self.surface.blit(score, (300, 250))
 
     def play(self):
+
         self.surface.blit(self.background_image, (0, 0))
         self.surface.blit(self.surfaceSecond, (0, 0))
+        # self.anggryDauTay.move_down()
+        self.anggryDauTay.walk()
+        self.anggryDauTay.draw()
+        for nangluc in self.sieunangluc:
+            nangluc.draw()
         self.anotherSnake.draw()
         self.snake.walk()
         self.strawberry.draw()
@@ -125,6 +135,7 @@ class Game:
         print(self.playerName)
         self.zoGameSound.play()
         self.gui_va_dinh_danh()
+
         while self.running:
             try:
                 self.gui_va_phan_tach_du_lieu()
@@ -138,17 +149,25 @@ class Game:
                         self.running = False
                     if event.key == K_LEFT:
                         self.snake.move_left()
-                    if event.key == K_SPACE:
-                        self.snake.dash()
                     if event.key == K_RIGHT:
                         self.snake.move_right()
                     if event.key == K_UP:
                         self.snake.move_up()
                     if event.key == K_DOWN:
                         self.snake.move_down()
+                    if event.key == K_SPACE:
+                        self.snake.dash()
+                    if event.key == K_q:
+                        # switch here
+                        self.sieunangluc.append(LaserShot(self.surface, self.snake.x[0], self.snake.y[0], self.snake.direction))
                 elif event.type == QUIT:
                     self.running = False
 
+            for nangluc in self.sieunangluc:
+                if nangluc.x < self.Weight and nangluc.y < self.Height:
+                    nangluc.xulyhuongdan()
+                else:
+                    self.sieunangluc.pop(self.sieunangluc.index(nangluc))
             self.play()
             print(self.level)
             self.clock.tick(self.level)
@@ -183,7 +202,7 @@ class Game:
     def tui_la_nguoi_may_man(self, ip_tang_diem):
         print(ip_tang_diem)
         print(self.network.mineIP)
-        self.level += 2
+        self.level += 1
         print(self.level)
         return self.network.mineIP == ip_tang_diem[0]
 
@@ -191,3 +210,5 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     game.run()
+
+#  chơi rắn săn mồi và xếp hình cùng lúc dựa trên cơ chế vừa làm

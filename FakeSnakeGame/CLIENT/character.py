@@ -1,14 +1,51 @@
 import pygame
 
 
-class Snake:
-    def __init__(self, parent_screen, background_image, length, color):
-        self.imageDuoi = pygame.image.load("tainguyen/duoi.png").convert()
+class Boss:
+    def __init__(self, parent_screen,x,y):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("tainguyen/player.png").convert()
+        self.image = pygame.image.load("tainguyen/hinhanh/boss.png")
         self.size = self.image.get_size()[0]
         self.direction = 'down'
-        self.background_image = background_image
+        self.x = x
+        self.y = y
+
+    def move_left(self):
+        self.direction = 'left'
+
+    def move_right(self):
+        self.direction = 'right'
+
+    def move_up(self):
+        self.direction = 'up'
+
+    def move_down(self):
+        self.direction = 'down'
+
+    def walk(self):
+        # update head
+        if self.direction == 'left':
+            self.x -= self.size
+        if self.direction == 'right':
+            self.x += self.size
+        if self.direction == 'up':
+            self.y -= self.size
+        if self.direction == 'down':
+            self.y += self.size
+
+        self.draw()
+
+    def draw(self):
+        self.parent_screen.blit(self.image, (self.x, self.y))
+
+
+class Snake:
+    def __init__(self, parent_screen, length, color):
+        self.imageDuoi = pygame.image.load("tainguyen/hinhanh/duoi.png").convert()
+        self.parent_screen = parent_screen
+        self.image = pygame.image.load("tainguyen/hinhanh/player.png").convert()
+        self.size = self.image.get_size()[0]
+        self.direction = 'down'
 
         self.length = length
         self.x = [self.size] * length
@@ -70,9 +107,11 @@ class Snake:
 class Strawberry:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.images = [pygame.image.load("tainguyen/dautay1.png"),pygame.image.load("tainguyen/dautay2.png"),
-                      pygame.image.load("tainguyen/dautay3.png"),pygame.image.load("tainguyen/dautay4.png"),
-                      pygame.image.load("tainguyen/dautay5.png")]
+        self.images = [pygame.image.load("tainguyen/hinhanh/dautay1.png"), pygame.image.load(
+            "tainguyen/hinhanh/dautay2.png"),
+                       pygame.image.load("tainguyen/hinhanh/dautay3.png"), pygame.image.load(
+                "tainguyen/hinhanh/dautay4.png"),
+                       pygame.image.load("tainguyen/hinhanh/dautay5.png")]
         # self.size = self.image.get_size()[0]
         self.size = 26
         self.x = 20 * self.size
@@ -100,7 +139,7 @@ class AnotherSnake:
     def __init__(self, parent_screen, parent_screen_image, x, y):
         self.parent_screen = parent_screen
         self.parent_screen_image = parent_screen_image
-        self.image = pygame.image.load("tainguyen/player2.png").convert()
+        self.image = pygame.image.load("tainguyen/hinhanh/player2.png").convert()
         self.x = x
         self.y = y
         self.rect = (x, y, 26, 26)
