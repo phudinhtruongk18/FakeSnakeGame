@@ -1,28 +1,46 @@
 import pygame
-from something import Knife
+from something import IcreamShot, LaserShot
+
 
 class Boss:
     def __init__(self, parent_screen,x,y):
         self.parent_screen = parent_screen
         self.render_image = pygame.image.load("tainguyen/hinhanh/boss.png")
+        self.render_image_360 = pygame.transform.flip(self.render_image, True, False)
         self.size = self.render_image.get_size()[0]
         self.x = x
         self.y = y
         self.count = 0
         self.knifes = []
+        self.render_image_temp = self.render_image
+        self.huong_dan = "left"
 
     def duoi_theo_nguoi_choi(self,snake_x,snake_y):
         print(snake_y,self.y+78)
-        if self.y + 52 == snake_y:
+        if self.y + 26 == snake_y:
             print("not tracing")
-        elif self.y + 52 < snake_y:
-            self.y += 13
+        elif self.y + 26 < snake_y:
+            self.y += 7.5
+            self.huong_dan = "down"
         else:
-            self.y -= 13
+            self.y -= 7.5
+            self.huong_dan = "up"
+
+        if self.x == snake_x:
+            print("not tracing")
+        elif self.x < snake_x:
+            self.x += 7.5
+            self.render_image_temp = self.render_image_360
+            self.huong_dan = "right"
+        else:
+            self.x -= 7.5
+            self.render_image_temp = self.render_image
+            self.huong_dan = "left"
         self.draw()
         self.count += 1
         if self.count > 10:
-            self.knifes.append(Knife(self.parent_screen, self.x, self.y+52, "left"))
+            self.knifes.append(IcreamShot(self.parent_screen, self.x + 26, self.y + 26, self.huong_dan))
+            # self.knifes.append(LaserShot(self.parent_screen, self.x, self.y+52, self.huong_dan))
             self.count = 0
 
     def draw(self):
@@ -32,7 +50,8 @@ class Boss:
             if temp.x < 0:
                 self.knifes.pop(self.knifes.index(temp))
 
-        self.parent_screen.blit(self.render_image, (self.x, self.y))
+
+        self.parent_screen.blit(self.render_image_temp, (self.x, self.y))
 
 
 

@@ -8,6 +8,6 @@ class StrawberryServer:
         self.y = 5 * self.size
 
     def move(self):
-        self.x = random.randint(1, 38) * self.size
+        self.x = random.randint(1, 30) * self.size
         self.y = random.randint(1, 20) * self.size
         return self.x,self.y

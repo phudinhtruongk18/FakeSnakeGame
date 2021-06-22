@@ -5,7 +5,7 @@ import socket
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.2.58"
+        self.server = "192.168.1.6"
         self.port = 65432
         # self.client.get
         self.mineIP = ""
