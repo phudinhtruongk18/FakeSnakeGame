@@ -5,8 +5,8 @@ import socket
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.6"
-        self.port = 65432
+        self.server = "127.0.0.1"
+        self.port = 3369
         # self.client.get
         self.mineIP = ""
         self.addr = ()

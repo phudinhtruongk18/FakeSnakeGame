@@ -29,15 +29,16 @@ class Game:
                                          x=20, y=20)
         self.anotherSnake.draw()
         self.strawberry = Strawberry(self.surface)
-        self.anggryDauTay = Boss(self.surface,900,52)
+        self.anggryDauTay = Boss(self.surface,900,52,self.Weight,self.snake)
         self.strawberry.draw()
         self.anggryDauTay.draw()
         if self.strawberry.size == self.snake.size:
             self.size = self.strawberry.size
         else:
             return
-        self.level = 10
+        self.level = 30
         self.playerName = "No Name"
+        self.out_of_armor = pygame.mixer.Sound("tainguyen/amthanh/out_of_armor.wav")
         self.eatSound = pygame.mixer.Sound("tainguyen/amthanh/eat.wav")
         self.zoGameSound = pygame.mixer.Sound("tainguyen/amthanh/heheboiz.wav")
         self.sieunangluc = []
@@ -78,7 +79,8 @@ class Game:
             nangluc.draw()
         self.anotherSnake.draw()
         self.snake.walk()
-        self.anggryDauTay.duoi_theo_nguoi_choi(self.snake.x[0],self.snake.y[0])
+        self.anggryDauTay.duoi_theo_nguoi_choi()
+
         self.strawberry.draw()
         self.display_score()
         pygame.display.flip()
@@ -157,7 +159,11 @@ class Game:
                         self.snake.dash()
                     if event.key == K_q:
                         # switch here
-                        self.sieunangluc.append(LaserShot(self.surface, self.snake.x[0], self.snake.y[0], self.snake.direction))
+                        if self.snake.length > 2:
+                            self.snake.decrease_length()
+                            self.sieunangluc.append(LaserShot(self.surface, self.snake.x[0], self.snake.y[0], self.snake.direction))
+                        else:
+                            self.out_of_armor.play()
                 elif event.type == QUIT:
                     self.running = False
 
@@ -167,7 +173,6 @@ class Game:
                 else:
                     self.sieunangluc.pop(self.sieunangluc.index(nangluc))
             self.play()
-            print(self.level)
             self.clock.tick(self.level)
 
         if hetSlot:

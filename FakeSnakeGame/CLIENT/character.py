@@ -3,32 +3,35 @@ from something import IcreamShot, LaserShot
 
 
 class Boss:
-    def __init__(self, parent_screen,x,y):
+    def __init__(self, parent_screen, x, y,weight_screen,snake):
+        self.snake = snake
+        self.weight_screen = weight_screen
         self.parent_screen = parent_screen
         self.render_image = pygame.image.load("tainguyen/hinhanh/boss.png")
         self.render_image_360 = pygame.transform.flip(self.render_image, True, False)
         self.size = self.render_image.get_size()[0]
+        self.size2 = self.render_image.get_size()[1]
         self.x = x
         self.y = y
         self.count = 0
         self.knifes = []
         self.render_image_temp = self.render_image
         self.huong_dan = "left"
+        self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size2)
 
-    def duoi_theo_nguoi_choi(self,snake_x,snake_y):
-        print(snake_y,self.y+78)
-        if self.y + 26 == snake_y:
+    def duoi_theo_nguoi_choi(self):
+        if self.y + 26 == self.snake.y[0]:
             print("not tracing")
-        elif self.y + 26 < snake_y:
+        elif self.y + 26 < self.snake.y[0]:
             self.y += 7.5
             self.huong_dan = "down"
         else:
             self.y -= 7.5
             self.huong_dan = "up"
 
-        if self.x == snake_x:
+        if self.x == self.snake.x[0]:
             print("not tracing")
-        elif self.x < snake_x:
+        elif self.x < self.snake.x[0]:
             self.x += 7.5
             self.render_image_temp = self.render_image_360
             self.huong_dan = "right"
@@ -36,6 +39,10 @@ class Boss:
             self.x -= 7.5
             self.render_image_temp = self.render_image
             self.huong_dan = "left"
+
+        if self.hitbox.colliderect(self.snake.hitbox):
+            print("U DIE")
+
         self.draw()
         self.count += 1
         if self.count > 10:
@@ -44,15 +51,17 @@ class Boss:
             self.count = 0
 
     def draw(self):
-        for temp in self.knifes:
-            temp.xulyhuongdan()
-            temp.draw()
-            if temp.x < 0:
-                self.knifes.pop(self.knifes.index(temp))
-
+        self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size2)
+        pygame.draw.rect(self.parent_screen, (255, 255, 255), self.hitbox, 2)
+        for temp_knife in self.knifes:
+            if temp_knife.x < 0 or temp_knife.x > self.weight_screen:
+                self.knifes.pop(self.knifes.index(temp_knife))
+            if temp_knife.xulyhuongdan(self.snake):
+                temp_knife.draw()
+            else:
+                self.knifes.pop(self.knifes.index(temp_knife))
 
         self.parent_screen.blit(self.render_image_temp, (self.x, self.y))
-
 
 
 class Snake:
@@ -67,7 +76,11 @@ class Snake:
         self.x = [self.size] * length
         self.y = [self.size] * length
         self.toaDo = []
+        self.hitbox_of_snake = []
         self.color = color
+
+        self.hitbox = pygame.Rect(self.x[0] -5, self.y[0] -5, self.size +10, self.size+10)
+
 
     def move_left(self):
         self.direction = 'left'
@@ -107,7 +120,15 @@ class Snake:
 
     def draw(self):
         self.toaDo.clear()
+        self.hitbox_of_snake.clear()
+        self.hitbox = pygame.Rect(self.x[0] -5, self.y[0] -5, self.size +10, self.size+10)
+        pygame.draw.rect(self.parent_screen, (255, 255, 255), self.hitbox, 2)
+
         for i in range(self.length):
+            hitbox = (self.x[i] - 5, self.y[i] - 5, self.size + 10, self.size + 10)
+            pygame.draw.rect(self.parent_screen, (0, 255, 255), hitbox, 2)
+
+            self.hitbox_of_snake.append(hitbox)
             self.toaDo.append((self.x[i], self.y[i]))
             if i == 0:
                 self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
@@ -118,6 +139,11 @@ class Snake:
         self.length += 1
         self.x.append(-1)
         self.y.append(-1)
+
+    def decrease_length(self):
+        self.length -= 1
+        self.x.append(+1)
+        self.y.append(+1)
 
 
 class Strawberry:
@@ -151,6 +177,7 @@ class Strawberry:
         self.x = x
         self.y = y
 
+
 class AnotherSnake:
     def __init__(self, parent_screen, parent_screen_image, x, y):
         self.parent_screen = parent_screen
@@ -178,3 +205,4 @@ class AnotherSnake:
 
     def set_X_and_Y(self, mausac_va_toado_moi):
         self.mau_vitri_another = mausac_va_toado_moi
+

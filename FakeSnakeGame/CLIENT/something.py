@@ -5,9 +5,9 @@ class IcreamShot:
     def __init__(self, parent_screen, x, y, huong_dan):
         self.y = y
         self.x = x
-        animate1 = pygame.transform.scale(pygame.image.load("tainguyen/hinhanh/icream.png"), (52, 52))
-        animate2 = pygame.transform.scale(pygame.image.load("tainguyen/hinhanh/icream2.png"), (52, 52))
-        animate3 = pygame.transform.scale(pygame.image.load("tainguyen/hinhanh/icream3.png"), (52, 52))
+        animate1 = pygame.transform.scale(pygame.image.load("tainguyen/hinhanh/icream.png"), (30,14))
+        animate2 = pygame.transform.scale(pygame.image.load("tainguyen/hinhanh/icream2.png"), (30,14))
+        animate3 = pygame.transform.scale(pygame.image.load("tainguyen/hinhanh/icream3.png"), (30,14))
         self.parent_screen = parent_screen
         chieu_ban, self.huong_dan = self.tim_huong_laser(huong_dan)
 
@@ -23,14 +23,28 @@ class IcreamShot:
         pygame.mixer.Sound("tainguyen/amthanh/knife.wav").play()
         self.count = 0
 
-    def xulyhuongdan(self):
+        self.size = animate1.get_size()[0]
+        self.size2 = animate1.get_size()[1]
+        self.hitbox = pygame.Rect(self.x + (20 * self.facing), self.y, self.size, self.size2)
+
+
+    def xulyhuongdan(self,snake):
         if self.huong_dan:
             self.x += self.vel
         else:
             self.y += self.vel
+        for temp_body in range(snake.length):
+            hitbox_snake = snake.hitbox_of_snake[temp_body]
+
+            if self.hitbox.colliderect(hitbox_snake):
+                return False
+
+        return True
 
     def draw(self):
         # if self.count % 2 == 0:
+        self.hitbox = pygame.Rect(self.x + (20 * self.facing), self.y, self.size, self.size2)
+        pygame.draw.rect(self.parent_screen, (255, 255, 0), self.hitbox, 2)
         self.parent_screen.blit(self.images[self.count], (self.x + 26 * self.facing, self.y))
         self.count += 1
         if self.count == 2:
